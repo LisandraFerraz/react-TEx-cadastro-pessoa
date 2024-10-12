@@ -2,8 +2,8 @@
 import { apiInterceptor } from "../Core/api-interceptor";
 import { endpoints } from "../Core/endpoints";
 
-export const listarPessoas = async () => {
-  return await apiInterceptor.get(endpoints.listarPessoas);
+export const listarPessoas = async (params?: {}) => {
+  return await apiInterceptor.get(endpoints.listarPessoas, { params });
 };
 
 export const listarPessoa = async (id: string) => {

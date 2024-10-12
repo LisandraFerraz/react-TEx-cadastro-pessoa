@@ -7,6 +7,7 @@ export enum EstadoCivil {
 }
 
 export interface IPessoaFisica {
+  _id: string;
   pNome: string;
   pCpf: number;
   pDataNasc: string;
@@ -20,4 +21,6 @@ export interface IPessoaFisica {
   pEmail: string;
   pEstadoCivil: EstadoCivil;
   pProfissao: string;
+
+  onPageChange: (page: number) => void;
 }
