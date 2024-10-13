@@ -7,7 +7,11 @@ export const listarPessoas = async (params?: {}) => {
 };
 
 export const listarPessoa = async (id: string) => {
-  return await apiInterceptor.get(`${endpoints.listarPessoas}${id}`);
+  return await apiInterceptor.get(`${endpoints.listarPessoas}/${id}`);
+};
+
+export const listarComboPessoas = async () => {
+  return await apiInterceptor.get(endpoints.comboPessoas);
 };
 
 export const criarPessoa = async (body: {}) => {
@@ -20,6 +24,10 @@ export const atualizarPessoa = async (id: string, body: {}) => {
 
 export const deletarPessoa = async (id: string) => {
   return await apiInterceptor.delete(`${endpoints.deletarPessoa}/${id}`);
+};
+
+export const buscarEndereco = async (cep: any) => {
+  return await apiInterceptor.get(`${endpoints.buscarEndereco}?cep=${cep}`);
 };
 
 // export const listarPessoas = () => {

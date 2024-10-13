@@ -31,11 +31,11 @@ export const DataTable = ({ data, paginacao, onDelete }: DataTableProps) => {
             <th>profissão</th>
           </tr>
         </thead>
-        {data.map((pf: any) => (
+        {data?.map((pf: any, index) => (
           <tbody>
-            <tr key={pf._id}>
+            <tr key={index}>
               <td>
-                <button onClick={() => deletarPessoaF(pf._id)}>DELETAR</button>
+                {/* <button onClick={() => deletarPessoaF(pf._id)}>DELETAR</button> */}
               </td>
               <td>{pf.pNome}</td>
               <td>{pf.pCpf}</td>

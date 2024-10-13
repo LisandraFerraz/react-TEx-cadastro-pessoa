@@ -17,10 +17,10 @@ export const Pagination = ({
     setPagNumbers(numbers);
   }, [totalItems, itemsPagina]);
 
-  return (
+  return totalItems > itemsPagina ? (
     <div className="flex flex-row items-end gap-1">
       <button
-        onClick={() => nextPage(paginaAtual - 1)}
+        onClick={() => (totalItems > 1 ? nextPage(paginaAtual - 1) : "")}
         className="bg-inputBtnBg squareBtn"
       >
         <i className="bi bi-chevron-left"></i>
@@ -37,11 +37,13 @@ export const Pagination = ({
         </button>
       ))}
       <button
-        onClick={() => nextPage(paginaAtual + 1)}
+        onClick={() => (totalItems > 1 ? nextPage(paginaAtual + 1) : "")}
         className=" bg-inputBtnBg squareBtn"
       >
         <i className="bi bi-chevron-right"></i>
       </button>
     </div>
+  ) : (
+    <></>
   );
 };
