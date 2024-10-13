@@ -6,7 +6,7 @@ import {
 } from "../../Shared/pessoaF-service";
 import { DataTable } from "../../Components/table";
 import { IPessoaFisica } from "../../utils/interfaces/pessoa-fisica";
-import { FiltrosListagem } from "../../utils/interfaces/filtros-listar";
+import { FiltrosListagem } from "../../utils/classes/filtros-listar";
 import { IPagination } from "../../utils/interfaces/pagination";
 import { Pagination } from "../../Components/pagination";
 import { Select } from "../../Components/select";
@@ -66,6 +66,14 @@ export const ConsultarPessoasF = () => {
     setFiltros((oldFiltros) => ({ ...oldFiltros, pNome: pNome }));
   };
 
+  // const criarPf = async (event: React.FormEvent<HTMLFormElement>) => {
+  //   event.preventDefault();
+  //   const body = {
+  //     pNome: pNome,
+  //   };
+  //   await criarPessoa(body);
+  // };
+
   return (
     <>
       <input
@@ -83,6 +91,7 @@ export const ConsultarPessoasF = () => {
             id="_id"
             value=""
             data={listaPessoas}
+            sName="pNome"
           />
           <DataTable
             data={data}

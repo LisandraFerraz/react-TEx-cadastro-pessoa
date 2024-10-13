@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { deletarPessoa, listarPessoas } from "../../Shared/pessoaF-service";
 import { IPagination } from "../../utils/interfaces/pagination";
 import { IPessoaFisica } from "../../utils/interfaces/pessoa-fisica";
@@ -9,6 +10,8 @@ interface DataTableProps {
   onDelete: (page: number) => void;
 }
 export const DataTable = ({ data, paginacao, onDelete }: DataTableProps) => {
+  const navigate = useNavigate();
+
   const deletarPessoaF = async (id: string) => {
     await deletarPessoa(id);
     return onDelete(1);
@@ -35,6 +38,9 @@ export const DataTable = ({ data, paginacao, onDelete }: DataTableProps) => {
           <tbody>
             <tr key={index}>
               <td>
+                <button onClick={() => navigate(`/atualizar-pessoa/${pf._id}`)}>
+                  Atualizar
+                </button>
                 {/* <button onClick={() => deletarPessoaF(pf._id)}>DELETAR</button> */}
               </td>
               <td>{pf.pNome}</td>

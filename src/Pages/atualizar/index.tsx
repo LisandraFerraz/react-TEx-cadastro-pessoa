@@ -1,19 +1,46 @@
-import { useState } from "react";
-import { Select } from "../../Components/select";
-import { buscarEndereco, criarPessoa } from "../../Shared/pessoaF-service";
-import { estadoCivilList } from "../../utils/data/estado-civil";
-import { InputFormPessoa } from "../../Components/form-pessoaF";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  atualizarPessoa,
+  buscarEndereco,
+  listarPessoa,
+} from "../../Shared/pessoaF-service";
 import { Pessoa } from "../../utils/classes/pessoa";
+import { InputFormPessoa } from "../../Components/form-pessoaF";
+import { Select } from "../../Components/select";
+import { estadoCivilList } from "../../utils/data/estado-civil";
 
-export const CadastroPessoa = () => {
-  const [body, setBody] = useState<Pessoa>(new Pessoa());
+export const AtualizarPessoa = () => {
+  const params = useParams();
+
+  const [data, setData] = useState<Pessoa>(new Pessoa());
+  const [oldData, setOldDate] = useState<Pessoa>(new Pessoa());
+
+  useEffect(() => {
+    listaPessoaInfo();
+  }, [setData]);
+
+  const listaPessoaInfo = async () => {
+    const res = await listarPessoa(String(params.id));
+    setData(res["data"]["pessoas"][0]);
+    setOldDate(res["data"]["pessoas"][0]);
+
+    console.log(res["data"]["pessoas"][0]);
+  };
+
+  const alteraCampo = (name: string, value: string) => {
+    setData((oldData) => ({
+      ...oldData,
+      [name]: value,
+    }));
+  };
 
   const buscaEndereco = async (cep: any) => {
-    if (cep.length === 8 && cep.match("^[0-9]*$")) {
+    if (cep?.length === 8 && cep.match("^[0-9]*$")) {
       const res = await buscarEndereco(cep);
       const data = res.data;
 
-      setBody((oldData) => ({
+      setData((oldData) => ({
         ...oldData,
         pBairro: data.bairro,
         pCidade: data.cidade,
@@ -25,31 +52,30 @@ export const CadastroPessoa = () => {
     }
   };
 
-  const criarPf = async (e: React.FormEvent<HTMLFormElement>) => {
+  const atualizaDados = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await criarPessoa(body);
-  };
+    const mudancas: Partial<Pessoa> = {};
 
-  const atualizaBodyProp = (name: string, value: string) => {
-    setBody((oldData) => ({
-      ...oldData,
-      [name]: value,
-    }));
+    for (const key in data) {
+      const typedKey = key as keyof Pessoa;
+      if (data[typedKey] !== oldData[typedKey])
+        mudancas[typedKey] = data[typedKey];
+    }
+
+    if (Object.keys(mudancas).length > 0) {
+      await atualizarPessoa(String(params.id), mudancas);
+      listaPessoaInfo();
+    }
   };
 
   return (
     <>
-      <form
-        onSubmit={criarPf}
-        id="cadastro-pessoa"
-        className="text-defaultWhite grid grid-cols-3 gap-4"
-      >
+      <form onSubmit={atualizaDados}>
         <div>
           <label htmlFor="pNome">Nome:</label>
-
           <InputFormPessoa
-            iValue={body.pNome}
-            setValue={atualizaBodyProp}
+            iValue={data.pNome}
+            setValue={alteraCampo}
             iName="pNome"
             iId="pNome"
             iType="text"
@@ -59,8 +85,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pCpf">pCpf:</label>
           <InputFormPessoa
-            iValue={body.pCpf}
-            setValue={atualizaBodyProp}
+            iValue={data.pCpf}
+            setValue={alteraCampo}
             iName="pCpf"
             iId="pCpf"
             iType="text"
@@ -71,8 +97,8 @@ export const CadastroPessoa = () => {
           <label htmlFor="pDataNasc">Data Nasc.:</label>
           <label htmlFor="pCpf">pCpf:</label>
           <InputFormPessoa
-            iValue={body.pDataNasc}
-            setValue={atualizaBodyProp}
+            iValue={data.pDataNasc}
+            setValue={alteraCampo}
             iName="pDataNasc"
             iId="pDataNasc"
             iType="date"
@@ -82,8 +108,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pTelefone">Telefone:</label>
           <InputFormPessoa
-            iValue={body.pTelefone}
-            setValue={atualizaBodyProp}
+            iValue={data.pTelefone}
+            setValue={alteraCampo}
             iName="pTelefone"
             iId="pTelefone"
             iType="text"
@@ -93,8 +119,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pCep">CEP:</label>
           <InputFormPessoa
-            iValue={body.pCep}
-            setValue={atualizaBodyProp}
+            iValue={data.pCep}
+            setValue={alteraCampo}
             setBlur={buscaEndereco}
             iName="pCep"
             iId="pCep"
@@ -118,8 +144,8 @@ export const CadastroPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pCidade">Cidade:</label>
           <InputFormPessoa
-            iValue={body.pCidade}
-            setValue={atualizaBodyProp}
+            iValue={data.pCidade}
+            setValue={alteraCampo}
             iName="pCidade"
             iId="pCidade"
             iType="text"
@@ -130,8 +156,8 @@ export const CadastroPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pEstado">Estado:</label>
           <InputFormPessoa
-            iValue={body.pEstado}
-            setValue={atualizaBodyProp}
+            iValue={data.pEstado}
+            setValue={alteraCampo}
             iName="pEstado"
             iId="pEstado"
             iType="text"
@@ -142,8 +168,8 @@ export const CadastroPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pBairro">Bairro:</label>
           <InputFormPessoa
-            iValue={body.pBairro}
-            setValue={atualizaBodyProp}
+            iValue={data.pBairro}
+            setValue={alteraCampo}
             iName="pBairro"
             iId="pBairro"
             iType="text"
@@ -154,8 +180,8 @@ export const CadastroPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pRua">Rua:</label>
           <InputFormPessoa
-            iValue={body.pRua}
-            setValue={atualizaBodyProp}
+            iValue={data.pRua}
+            setValue={alteraCampo}
             iName="pRua"
             iId="pRua"
             iType="text"
@@ -165,8 +191,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pNumero">Número:</label>
           <InputFormPessoa
-            iValue={body.pNumero}
-            setValue={atualizaBodyProp}
+            iValue={data.pNumero}
+            setValue={alteraCampo}
             iName="pNumero"
             iId="pNumero"
             iType="text"
@@ -176,8 +202,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pComplemento">Complemento:</label>
           <InputFormPessoa
-            iValue={body.pComplemento}
-            setValue={atualizaBodyProp}
+            iValue={data.pComplemento}
+            setValue={alteraCampo}
             iName="pComplemento"
             iId="pComplemento"
             iType="text"
@@ -187,8 +213,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pEmail">E-mail:</label>
           <InputFormPessoa
-            iValue={body.pEmail}
-            setValue={atualizaBodyProp}
+            iValue={data.pEmail}
+            setValue={alteraCampo}
             iName="pEmail"
             iId="pEmail"
             iType="email"
@@ -199,7 +225,7 @@ export const CadastroPessoa = () => {
           <label htmlFor="pEstadoCivil">Estado Civil:</label>
           <Select
             data={estadoCivilList}
-            setValue={atualizaBodyProp}
+            setValue={alteraCampo}
             value="pEstadoCivil"
             desc="pEstadoCivil"
             sName="pEstadoCivil"
@@ -209,8 +235,8 @@ export const CadastroPessoa = () => {
         <div>
           <label htmlFor="pProfissao">Profissão:</label>
           <InputFormPessoa
-            iValue={body.pProfissao}
-            setValue={atualizaBodyProp}
+            iValue={data.pProfissao}
+            setValue={alteraCampo}
             iName="pProfissao"
             iId="pProfissao"
             iType="text"
@@ -218,7 +244,7 @@ export const CadastroPessoa = () => {
           />
         </div>
         <div>
-          <button onClick={() => console.log(body)}>CRIAR</button>
+          <button onClick={() => console.log(data)}>CRIAR</button>
         </div>
       </form>
     </>

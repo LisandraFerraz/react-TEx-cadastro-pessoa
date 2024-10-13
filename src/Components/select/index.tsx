@@ -1,8 +1,9 @@
-interface Props<T> {
-  setValue?: (value: any) => void;
+interface SelectPessoa<T> {
+  setValue?: (name: string, value: any) => void;
   value: keyof T;
   id: keyof T;
   desc: keyof T;
+  sName: keyof T;
   data: T[];
 }
 
@@ -12,14 +13,15 @@ export const Select = <T extends object>({
   id,
   data,
   setValue,
-}: Props<T>) => {
+  sName,
+}: SelectPessoa<T>) => {
   return (
     <>
       <select
         className="text-bgDark"
-        name=""
+        name={sName as string}
         onChange={(e) => {
-          if (setValue) setValue(e.currentTarget.value);
+          if (setValue) setValue(value as string, e.currentTarget.value);
         }}
       >
         <option value="0" disabled>

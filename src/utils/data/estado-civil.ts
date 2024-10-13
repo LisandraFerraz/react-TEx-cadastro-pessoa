@@ -1,22 +1,22 @@
 export const estadoCivilList = [
   {
-    value: "Solteiro(a)",
+    pEstadoCivil: "Solteiro(a)",
     id: 1,
   },
   {
-    value: "Casado(a)",
+    pEstadoCivil: "Casado(a)",
     id: 2,
   },
   {
-    value: "Viúvo(a)",
+    pEstadoCivil: "Viúvo(a)",
     id: 3,
   },
   {
-    value: "Divorciado(a)",
+    pEstadoCivil: "Divorciado(a)",
     id: 4,
   },
   {
-    value: "União Estável",
+    pEstadoCivil: "União Estável",
     id: 5,
   },
 ];
