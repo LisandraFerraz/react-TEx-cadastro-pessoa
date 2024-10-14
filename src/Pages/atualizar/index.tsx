@@ -28,6 +28,7 @@ import {
   validaTelefone,
 } from "../../utils/functions/validate-form";
 import { errorMsg } from "../../utils/functions/get-error";
+import { Header } from "../../Components/header";
 
 export const AtualizarPessoa = () => {
   const params = useParams();
@@ -40,11 +41,13 @@ export const AtualizarPessoa = () => {
   }, [setData]);
 
   const listaPessoaInfo = async () => {
-    const res = await listarPessoa(String(params.id));
-    setData(res["data"]["pessoas"][0]);
-    setOldDate(res["data"]["pessoas"][0]);
-
-    console.log(res["data"]["pessoas"][0]);
+    try {
+      const res = await listarPessoa(String(params.id));
+      setData(res["data"]["pessoas"][0]);
+      setOldDate(res["data"]["pessoas"][0]);
+    } catch (error) {
+      console.error(errorMsg(error));
+    }
   };
 
   const alteraCampo = (name: string, value: string) => {
@@ -56,18 +59,20 @@ export const AtualizarPessoa = () => {
 
   const buscaEndereco = async (cep: any) => {
     if (cep?.length === 8 && cep.match("^[0-9]*$")) {
-      const res = await buscarEndereco(cep);
-      const data = res.data;
+      try {
+        const res = await buscarEndereco(cep);
+        const data = res.data;
 
-      setData((oldData) => ({
-        ...oldData,
-        pBairro: data.bairro,
-        pCidade: data.cidade,
-        pEstado: data.estado,
-        pRua: data.rua,
-      }));
-    } else {
-      console.log("tratamento de erro");
+        setData((oldData) => ({
+          ...oldData,
+          pBairro: data.bairro,
+          pCidade: data.cidade,
+          pEstado: data.estado,
+          pRua: data.rua,
+        }));
+      } catch (error) {
+        console.error(errorMsg(error));
+      }
     }
   };
 
@@ -95,214 +100,216 @@ export const AtualizarPessoa = () => {
     if (Object.keys(mudancas).length > 0 && !formularoVazio(mudancas)) {
       try {
         await atualizarPessoa(String(params.id), mudancas);
+        window.alert("Atualizado com sucesso!");
       } catch (error) {
-        console.log(errorMsg(error));
+        console.error(errorMsg(error));
       }
       listaPessoaInfo();
-    } else {
-      console.log("invalido");
-      // colocar mensagem de erro
     }
   };
 
   return (
     <>
-      <form
-        onSubmit={atualizaDados}
-        className="text-defaultWhite grid grid-cols-3 gap-4"
-      >
-        <div>
-          <label htmlFor="pNome">Nome:</label>
-          <InputFormPessoa
-            iValue={data.pNome}
-            setValue={alteraCampo}
-            validacao={() => validaNome(data)}
-            iName="pNome"
-            iId="pNome"
-            iType="text"
-            iPlaceholder="Insira o nome..."
-          />
-        </div>
-        <div>
-          <label htmlFor="pGenero">Genêro:</label>
-          <Select
-            data={generoLista}
-            setValue={alteraCampo}
-            validacao={() => validaGenero(data)}
-            value="pGenero"
-            desc="pGenero"
-            sName="pGenero"
-            id="id"
-          />
-        </div>
-        <div>
-          <label htmlFor="pCpf">pCpf:</label>
-          <InputFormPessoa
-            iValue={data.pCpf}
-            setValue={alteraCampo}
-            validacao={() => validaCpf(data)}
-            iName="pCpf"
-            iId="pCpf"
-            iType="text"
-            iPlaceholder="000.000.000-00"
-          />
-        </div>
-        <div>
-          <label htmlFor="pDataNasc">Data Nasc.:</label>
-          <InputFormPessoa
-            iValue={data.pDataNasc}
-            setValue={alteraCampo}
-            validacao={() => validaDataNasc(data)}
-            iName="pDataNasc"
-            iId="pDataNasc"
-            iType="date"
-          />
-        </div>
-        <div>
-          <label htmlFor="pCep">CEP:</label>
-          <InputFormPessoa
-            iValue={data.pCep}
-            setValue={alteraCampo}
-            setBlur={buscaEndereco}
-            validacao={() => validaCep(data)}
-            iName="pCep"
-            iId="pCep"
-            iType="text"
-            iPlaceholder="0000-000"
-          />
-        </div>
-        <div>
-          {/* deixar nao editavel */}
-          <label htmlFor="pCidade">Cidade:</label>
-          <InputFormPessoa
-            disabled={true}
-            iValue={data.pCidade}
-            setValue={alteraCampo}
-            validacao={() => validaCidade(data)}
-            iName="pCidade"
-            iId="pCidade"
-            iType="text"
-            iPlaceholder="Informe a cidade"
-          />
-        </div>
-        <div>
-          {/* deixar nao editavel */}
-          <label htmlFor="pEstado">Estado:</label>
-          <InputFormPessoa
-            disabled={true}
-            iValue={data.pEstado}
-            setValue={alteraCampo}
-            validacao={() => validaEstado(data)}
-            iName="pEstado"
-            iId="pEstado"
-            iType="text"
-            iPlaceholder="Informe o estado"
-          />
-        </div>
-        <div>
-          {/* deixar nao editavel */}
-          <label htmlFor="pBairro">Bairro:</label>
-          <InputFormPessoa
-            disabled={true}
-            iValue={data.pBairro}
-            setValue={alteraCampo}
-            validacao={() => validaBairro(data)}
-            iName="pBairro"
-            iId="pBairro"
-            iType="text"
-            iPlaceholder="Informe o bairro"
-          />
-        </div>
-        <div>
-          {/* deixar nao editavel */}
-          <label htmlFor="pRua">Rua:</label>
-          <InputFormPessoa
-            disabled={true}
-            iValue={data.pRua}
-            setValue={alteraCampo}
-            validacao={() => validaRua(data)}
-            iName="pRua"
-            iId="pRua"
-            iType="text"
-            iPlaceholder="Informe a rua"
-          />
-        </div>
-        <div>
-          <label htmlFor="pNumero">Número:</label>
-          <InputFormPessoa
-            iValue={data.pNumero}
-            setValue={alteraCampo}
-            validacao={() => validaNumero(data)}
-            iName="pNumero"
-            iId="pNumero"
-            iType="text"
-            iPlaceholder="Informe a rua"
-          />
-        </div>
-        <div>
-          <label htmlFor="pComplemento">Complemento:</label>
-          <InputFormPessoa
-            iValue={data.pComplemento}
-            validacao={() => validaComplemento(data)}
-            setValue={alteraCampo}
-            iName="pComplemento"
-            iId="pComplemento"
-            iType="text"
-            iPlaceholder="Informe o complemento"
-          />
-        </div>
-        <div>
-          <label htmlFor="pEmail">E-mail:</label>
-          <InputFormPessoa
-            iValue={data.pEmail}
-            setValue={alteraCampo}
-            validacao={() => validaEmail(data)}
-            iName="pEmail"
-            iId="pEmail"
-            iType="text"
-            iPlaceholder="Informe o email"
-          />
-        </div>
-        <div>
-          <label htmlFor="pTelefone">Telefone:</label>
-          <InputFormPessoa
-            iValue={data.pTelefone}
-            setValue={alteraCampo}
-            validacao={() => validaTelefone(data)}
-            iName="pTelefone"
-            iId="pTelefone"
-            iType="text"
-            iPlaceholder="(00) 0000-0000"
-          />
-        </div>
-        <div>
-          <label htmlFor="pEstadoCivil">Estado Civil:</label>
-          <Select
-            data={estadoCivilList}
-            setValue={alteraCampo}
-            validacao={() => validaEstadoCivil(data)}
-            value="pEstadoCivil"
-            desc="pEstadoCivil"
-            sName="pEstadoCivil"
-            id="id"
-          />
-        </div>
-        <div>
-          <label htmlFor="pProfissao">Profissão:</label>
-          <InputFormPessoa
-            iValue={data.pProfissao}
-            setValue={alteraCampo}
-            validacao={() => validaProfissao(data)}
-            iName="pProfissao"
-            iId="pProfissao"
-            iType="text"
-            iPlaceholder="Informe a profissão"
-          />
-        </div>
-        <div>
-          <button onClick={() => console.log(data)}>CRIAR</button>
-        </div>
-      </form>
+      <Header titulo={"Atualizar dados cadastrais"} />
+      <div className="container ">
+        <form onSubmit={atualizaDados}>
+          <div className="text-defaultWhite grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-1 gap-6">
+            <div>
+              <label htmlFor="pNome">Nome:</label>
+              <InputFormPessoa
+                iValue={data.pNome}
+                setValue={alteraCampo}
+                validacao={() => validaNome(data)}
+                iName="pNome"
+                iId="pNome"
+                iType="text"
+                iPlaceholder="Insira o nome"
+              />
+            </div>
+            <div>
+              <label htmlFor="pGenero">Gênero:</label>
+              <Select
+                data={generoLista}
+                setValue={alteraCampo}
+                validacao={() => validaGenero(data)}
+                value="pGenero"
+                desc="pGenero"
+                sName="pGenero"
+                id="id"
+              />
+            </div>
+            <div>
+              <label htmlFor="pCpf">pCpf:</label>
+              <InputFormPessoa
+                iValue={data.pCpf}
+                setValue={alteraCampo}
+                validacao={() => validaCpf(data)}
+                iName="pCpf"
+                iId="pCpf"
+                iType="text"
+                iPlaceholder="000.000.000-00"
+              />
+            </div>
+            <div>
+              <label htmlFor="pDataNasc">Data Nasc.:</label>
+              <InputFormPessoa
+                iValue={data.pDataNasc}
+                setValue={alteraCampo}
+                validacao={() => validaDataNasc(data)}
+                iName="pDataNasc"
+                iId="pDataNasc"
+                iType="date"
+              />
+            </div>
+            <div>
+              <label htmlFor="pCep">CEP:</label>
+              <InputFormPessoa
+                iValue={data.pCep}
+                setValue={alteraCampo}
+                setBlur={buscaEndereco}
+                validacao={() => validaCep(data)}
+                iName="pCep"
+                iId="pCep"
+                iType="text"
+                iPlaceholder="0000-000"
+              />
+            </div>
+            <div>
+              {/* deixar nao editavel */}
+              <label htmlFor="pCidade">Cidade:</label>
+              <InputFormPessoa
+                disabled={true}
+                iValue={data.pCidade}
+                setValue={alteraCampo}
+                validacao={() => validaCidade(data)}
+                iName="pCidade"
+                iId="pCidade"
+                iType="text"
+                iPlaceholder="Informe a cidade"
+              />
+            </div>
+            <div>
+              {/* deixar nao editavel */}
+              <label htmlFor="pEstado">Estado:</label>
+              <InputFormPessoa
+                disabled={true}
+                iValue={data.pEstado}
+                setValue={alteraCampo}
+                validacao={() => validaEstado(data)}
+                iName="pEstado"
+                iId="pEstado"
+                iType="text"
+                iPlaceholder="Informe o estado"
+              />
+            </div>
+            <div>
+              {/* deixar nao editavel */}
+              <label htmlFor="pBairro">Bairro:</label>
+              <InputFormPessoa
+                disabled={true}
+                iValue={data.pBairro}
+                setValue={alteraCampo}
+                validacao={() => validaBairro(data)}
+                iName="pBairro"
+                iId="pBairro"
+                iType="text"
+                iPlaceholder="Informe o bairro"
+              />
+            </div>
+            <div>
+              {/* deixar nao editavel */}
+              <label htmlFor="pRua">Rua:</label>
+              <InputFormPessoa
+                disabled={true}
+                iValue={data.pRua}
+                setValue={alteraCampo}
+                validacao={() => validaRua(data)}
+                iName="pRua"
+                iId="pRua"
+                iType="text"
+                iPlaceholder="Informe a rua"
+              />
+            </div>
+            <div>
+              <label htmlFor="pNumero">Número:</label>
+              <InputFormPessoa
+                iValue={data.pNumero}
+                setValue={alteraCampo}
+                validacao={() => validaNumero(data)}
+                iName="pNumero"
+                iId="pNumero"
+                iType="text"
+                iPlaceholder="Informe o número"
+              />
+            </div>
+            <div>
+              <label htmlFor="pComplemento">Complemento (opcional):</label>
+              <InputFormPessoa
+                iValue={data.pComplemento}
+                validacao={() => validaComplemento(data)}
+                setValue={alteraCampo}
+                iName="pComplemento"
+                iId="pComplemento"
+                iType="text"
+                iPlaceholder="Informe o complemento"
+              />
+            </div>
+            <div>
+              <label htmlFor="pEmail">E-mail:</label>
+              <InputFormPessoa
+                iValue={data.pEmail}
+                setValue={alteraCampo}
+                validacao={() => validaEmail(data)}
+                iName="pEmail"
+                iId="pEmail"
+                iType="text"
+                iPlaceholder="Informe o email"
+              />
+            </div>
+            <div>
+              <label htmlFor="pTelefone">Telefone:</label>
+              <InputFormPessoa
+                iValue={data.pTelefone}
+                setValue={alteraCampo}
+                validacao={() => validaTelefone(data)}
+                iName="pTelefone"
+                iId="pTelefone"
+                iType="text"
+                iPlaceholder="(00) 0000-0000"
+              />
+            </div>
+            <div>
+              <label htmlFor="pEstadoCivil">Estado Civil:</label>
+              <Select
+                data={estadoCivilList}
+                setValue={alteraCampo}
+                validacao={() => validaEstadoCivil(data)}
+                value="pEstadoCivil"
+                desc="pEstadoCivil"
+                sName="pEstadoCivil"
+                id="id"
+              />
+            </div>
+            <div>
+              <label htmlFor="pProfissao">Profissão:</label>
+              <InputFormPessoa
+                iValue={data.pProfissao}
+                setValue={alteraCampo}
+                validacao={() => validaProfissao(data)}
+                iName="pProfissao"
+                iId="pProfissao"
+                iType="text"
+                iPlaceholder="Informe a profissão"
+              />
+            </div>
+          </div>
+          <div className="mt-7 w-full text-center flex flex-col gap-2 items-center">
+            <button type="submit" className="custom-btn-lg ">
+              ATUALIZAR
+            </button>
+          </div>
+        </form>
+      </div>
     </>
   );
 };

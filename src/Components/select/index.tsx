@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 interface SelectPessoa<T> {
-  setValue?: (name: string, value: any) => void;
+  setValue?: (value: any, name: string) => void;
   value: keyof T;
   id: keyof T;
   desc: keyof T;
@@ -23,17 +23,12 @@ export const Select = <T extends object>({
 
   const handleOnChange = (e: any) => {
     if (setValue) setValue(value as string, e.currentTarget.value);
-
-    console.log(e.currentTarget.value);
-    if (validacao) {
-      setMsgError(validacao() ? validacao : "");
-    }
   };
 
   return (
     <>
       <select
-        className="text-bgDark"
+        className="custom-input text-bgDark w-full"
         name={sName as string}
         onChange={(e) => handleOnChange(e)}
         onBlur={() => {
@@ -42,17 +37,24 @@ export const Select = <T extends object>({
           }
         }}
       >
-        {data.map((item, index) => (
-          <option
-            key={index}
-            value={item[value] as string}
-            id={item[id] as any}
-          >
-            {item[desc] as string}
-          </option>
-        ))}
+        <option value="0">Selecionar</option>
+        {data ? (
+          data.map((item, index) => (
+            <option
+              key={index}
+              value={item[value] as string}
+              id={item[id] as any}
+            >
+              {item[desc] as string}
+            </option>
+          ))
+        ) : (
+          <option value="">Sem registros</option>
+        )}
       </select>
-      {msgError && <span className="text-defaultWhite">{msgError}</span>}
+      {msgError && (
+        <span className="text-pastelRed font-normal text-sm">*{msgError}</span>
+      )}
     </>
   );
 };

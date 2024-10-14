@@ -47,7 +47,7 @@ export const InputFormPessoa = <T extends object>({
     <>
       <input
         disabled={disabled}
-        className="text-bgDark"
+        className="text-bgDark custom-input"
         name={iName as string}
         id={iId as string}
         type={iType as string}
@@ -60,7 +60,9 @@ export const InputFormPessoa = <T extends object>({
           handleChange(e);
         }}
       />
-      {msgError && <span className="text-defaultWhite">{msgError}</span>}
+      {msgError && (
+        <span className="text-pastelRed font-normal text-sm">* {msgError}</span>
+      )}
     </>
   );
 };

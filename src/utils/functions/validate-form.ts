@@ -36,8 +36,8 @@ export function validaGenero(body: Pessoa): string {
 }
 
 export function validaDataNasc(body: Pessoa): string {
-  if (!body.pDataNasc || validaDate(body.pDataNasc)) {
-    const errorMsg = "Data deve ser menor que o dia atual.";
+  if (!body.pDataNasc) {
+    const errorMsg = "Data deve ser informada.";
     return errorMsg;
   }
   return "";

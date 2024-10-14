@@ -1,9 +1,5 @@
 export const generoLista = [
   {
-    pGenero: "Selecione",
-    id: 0,
-  },
-  {
     pGenero: "Feminino",
     id: 1,
   },

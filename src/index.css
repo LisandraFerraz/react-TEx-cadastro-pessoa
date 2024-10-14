@@ -7,17 +7,15 @@ body {
   margin: 0;
   padding: 0;
   border: 0;
-  font-size: 100%;
   font: inherit;
-  vertical-align: baseline;
-  font-family: "InterVariable", "sans-serif";
 
+  font-family: "InterVariable", "sans-serif";
   height: 100%;
-  background-color: #222222;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
   align-items: center;
+  background-color: #222222;
 }
 
 ol,
@@ -26,11 +24,70 @@ ul {
 }
 
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
+  border-collapse: separate;
+  border-spacing: 1px;
+  width: max-content;
+  margin-bottom: 15px;
 }
 
+table thead th {
+  @apply font-normal px-4;
+}
+
+table tbody td {
+  @apply w-fit py-2 px-4 h-[50px] border-bgDark;
+}
 .squareBtn {
   @apply h-[35px] w-[35px] rounded-md
   text-defaultWhite text-center hover:opacity-80 transition-opacity ease-linear delay-75;
+}
+
+.container {
+  @apply bg-bgLight rounded-lg p-7 m-7 w-[80vw];
+}
+
+.custom-btn-action {
+  @apply rounded-full bg-defaultWhite bg-opacity-10 h-[35px] w-[35px]
+  hover:opacity-60 text-center inline-block pt-1 transition-all ease-in delay-75;
+}
+
+.custom-input {
+  @apply h-[45px] rounded-md pl-2 py-2 w-full
+  bg-inputBtnBg hover:bg-bgGrey focus:bg-bgGrey shadow-bgGrey 
+  transition-all ease-in delay-75 outline-none shadow-sm
+  disabled:text-opacity-60
+  disabled:hover:bg-inputBtnBg disabled:cursor-not-allowed disabled:placeholder:text-opacity-60
+  text-defaultWhite placeholder:text-defaultWhite;
+}
+
+form > div > div {
+  @apply flex flex-col w-full gap-2;
+}
+
+form > div > div label {
+  @apply uppercase text-sm font-semibold;
+}
+
+.custom-btn-lg {
+  @apply bg-gradient-to-l h-[35px]
+  disabled:from-inputBtnBg disabled:to-inputBtnBg disabled:cursor-not-allowed
+   text-defaultWhite font-semibold rounded-md 
+   from-pastelPink to-pastelBlue w-[230px];
+}
+
+*::-webkit-scrollbar {
+  width: 10px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #333333;
+  border-radius: 10px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #5b5b5b;
+  border-radius: 10px;
+}
+*::-webkit-calendar-picker-indicator {
+  filter: invert(1);
 }

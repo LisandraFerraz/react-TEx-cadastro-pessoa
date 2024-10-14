@@ -11,6 +11,13 @@ import { IPagination } from "../../utils/interfaces/pagination";
 import { Pagination } from "../../Components/pagination";
 import { Select } from "../../Components/select";
 import { useNavigate } from "react-router-dom";
+import { Header } from "../../Components/header";
+import { errorMsg } from "../../utils/functions/get-error";
+
+interface ListaPessoas {
+  pNome: string;
+  _id: string;
+}
 
 export const ConsultarPessoasF = () => {
   const navigate = useNavigate();
@@ -19,7 +26,7 @@ export const ConsultarPessoasF = () => {
   const [data, setData] = useState<IPessoaFisica[]>([]);
   const [pagination, setPagination] = useState<IPagination | null>();
 
-  const [listaPessoas, setListaPessoas] = useState<any[]>([]);
+  const [listaPessoas, setListaPessoas] = useState<ListaPessoas[]>([]);
   const [pNome, setpNome] = useState<string>("");
 
   useEffect(() => {
@@ -35,20 +42,18 @@ export const ConsultarPessoasF = () => {
       const res = await listarComboPessoas();
       setListaPessoas(res.data);
     } catch (error) {
-      console.log(error);
+      console.error(errorMsg(error));
     }
   };
 
   const listarData = async (page: number) => {
     try {
-      console.log("filtros |", filtros);
-
       filtros.page = page;
       const res = await listarPessoas(filtros);
       setData(res.data["pessoas"]);
       setPagination(res.data["paginacao"]);
     } catch (error) {
-      console.log(error);
+      console.error(errorMsg(error));
     } finally {
       return;
     }
@@ -59,62 +64,86 @@ export const ConsultarPessoasF = () => {
       const res = await listarPessoa(id);
       setData(res.data["pessoas"]);
       setPagination(res.data["paginacao"]);
-    } catch (error) {}
+    } catch (error) {
+      console.error(errorMsg(error));
+    }
   };
 
   const pesquisarPessoa = async () => {
     setFiltros((oldFiltros) => ({ ...oldFiltros, pNome: pNome }));
   };
 
-  // const criarPf = async (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const body = {
-  //     pNome: pNome,
-  //   };
-  //   await criarPessoa(body);
-  // };
-
   return (
     <>
-      <input
-        name="pNome"
-        type="text"
-        placeholder="Pesquisar nome..."
-        onChange={(event) => setpNome(event?.target.value)}
-      />
-      <button onClick={pesquisarPessoa}>Pesquisar</button>
+      <div>
+        <Header titulo="Consulta de Pessoa Física" />
+      </div>
+      <div className="container">
+        <div className="md:flex gap-3 sm:grid sm:grid-cols-1  grid grid-cols-1 items-center">
+          <div className="relative w-full">
+            <input
+              name="pNome"
+              type="text"
+              className="custom-input  pr-[65px]"
+              placeholder="Pesquisar nome..."
+              value={pNome}
+              onChange={(event) => setpNome(event?.target.value)}
+            />
+            <button
+              className="absolute right-0 top-0 h-full px-3"
+              onClick={pesquisarPessoa}
+            >
+              <i className="bi bi-search text-defaultWhite"></i>
+            </button>
+          </div>
 
-      {pagination && (
-        <div>
           <Select
-            setValue={(id) => listaCombo(id)}
+            setValue={(name, id) => listaCombo(id)}
+            data={listaPessoas}
             desc="pNome"
             id="_id"
-            value=""
-            data={listaPessoas}
+            value="_id"
             sName="pNome"
           />
-          <DataTable
-            data={data}
-            paginacao={pagination}
-            onDelete={() => listarData(1)}
-          />
-          <div className="flex flex-row justify-between items-center w-full">
+          <div className=" sm:text-center">
             <button
-              onClick={() => navigate("/cadastro-pessoa")}
-              className="squareBtn text-2xl bg-gradient-to-l from-pastelPink to-pastelBlue"
+              className="custom-btn-action  text-defaultWhite"
+              onClick={() => {
+                setFiltros(() => new FiltrosListagem());
+                setpNome("");
+              }}
             >
-              +
+              <i className="bi bi-arrow-clockwise"></i>
             </button>
-            <Pagination
-              nextPage={(page) => listarData(page)}
-              totalItems={pagination.totalItems}
-              paginaAtual={pagination.paginaAtual}
-              itemsPagina={pagination.itemsPagina}
-            />
           </div>
         </div>
-      )}
+        {pagination && (
+          <div>
+            <DataTable
+              data={data}
+              paginacao={pagination}
+              onDelete={() => {
+                listarData(1);
+                listarComboP();
+              }}
+            />
+            <div className="flex flex-row justify-between items-center w-full">
+              <button
+                onClick={() => navigate("/cadastro-pessoa")}
+                className="squareBtn text-2xl bg-gradient-to-l from-pastelPink to-pastelBlue"
+              >
+                +
+              </button>
+              <Pagination
+                nextPage={(page) => listarData(page)}
+                totalItems={pagination.totalItems}
+                paginaAtual={pagination.paginaAtual}
+                itemsPagina={pagination.itemsPagina}
+              />
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 };
