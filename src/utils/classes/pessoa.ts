@@ -1,6 +1,7 @@
 export class Pessoa {
   pNome: string = "";
   pCpf: string = "";
+  pGenero: string = "";
   pDataNasc: string = "";
   pTelefone: string = "";
   pCep: string = "";

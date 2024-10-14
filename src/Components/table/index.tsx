@@ -36,12 +36,12 @@ export const DataTable = ({ data, paginacao, onDelete }: DataTableProps) => {
         </thead>
         {data?.map((pf: any, index) => (
           <tbody>
-            <tr key={index}>
+            <tr key={pf._id}>
               <td>
                 <button onClick={() => navigate(`/atualizar-pessoa/${pf._id}`)}>
                   Atualizar
                 </button>
-                {/* <button onClick={() => deletarPessoaF(pf._id)}>DELETAR</button> */}
+                <button onClick={() => deletarPessoaF(pf._id)}>DELETAR</button>
               </td>
               <td>{pf.pNome}</td>
               <td>{pf.pCpf}</td>

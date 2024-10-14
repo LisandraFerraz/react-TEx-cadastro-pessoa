@@ -9,6 +9,25 @@ import { Pessoa } from "../../utils/classes/pessoa";
 import { InputFormPessoa } from "../../Components/form-pessoaF";
 import { Select } from "../../Components/select";
 import { estadoCivilList } from "../../utils/data/estado-civil";
+import { generoLista } from "../../utils/data/genero";
+import {
+  validaBairro,
+  validaCep,
+  validaCidade,
+  validaComplemento,
+  validaCpf,
+  validaDataNasc,
+  validaEmail,
+  validaEstado,
+  validaEstadoCivil,
+  validaGenero,
+  validaNome,
+  validaNumero,
+  validaProfissao,
+  validaRua,
+  validaTelefone,
+} from "../../utils/functions/validate-form";
+import { errorMsg } from "../../utils/functions/get-error";
 
 export const AtualizarPessoa = () => {
   const params = useParams();
@@ -52,6 +71,17 @@ export const AtualizarPessoa = () => {
     }
   };
 
+  function formularoVazio(body: any): boolean {
+    for (const key in body) {
+      if (body.hasOwnProperty(key)) {
+        if (body[key] === "" || body[key] === undefined || body[key] === null) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
   const atualizaDados = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const mudancas: Partial<Pessoa> = {};
@@ -62,20 +92,31 @@ export const AtualizarPessoa = () => {
         mudancas[typedKey] = data[typedKey];
     }
 
-    if (Object.keys(mudancas).length > 0) {
-      await atualizarPessoa(String(params.id), mudancas);
+    if (Object.keys(mudancas).length > 0 && !formularoVazio(mudancas)) {
+      try {
+        await atualizarPessoa(String(params.id), mudancas);
+      } catch (error) {
+        console.log(errorMsg(error));
+      }
       listaPessoaInfo();
+    } else {
+      console.log("invalido");
+      // colocar mensagem de erro
     }
   };
 
   return (
     <>
-      <form onSubmit={atualizaDados}>
+      <form
+        onSubmit={atualizaDados}
+        className="text-defaultWhite grid grid-cols-3 gap-4"
+      >
         <div>
           <label htmlFor="pNome">Nome:</label>
           <InputFormPessoa
             iValue={data.pNome}
             setValue={alteraCampo}
+            validacao={() => validaNome(data)}
             iName="pNome"
             iId="pNome"
             iType="text"
@@ -83,10 +124,23 @@ export const AtualizarPessoa = () => {
           />
         </div>
         <div>
+          <label htmlFor="pGenero">Genêro:</label>
+          <Select
+            data={generoLista}
+            setValue={alteraCampo}
+            validacao={() => validaGenero(data)}
+            value="pGenero"
+            desc="pGenero"
+            sName="pGenero"
+            id="id"
+          />
+        </div>
+        <div>
           <label htmlFor="pCpf">pCpf:</label>
           <InputFormPessoa
             iValue={data.pCpf}
             setValue={alteraCampo}
+            validacao={() => validaCpf(data)}
             iName="pCpf"
             iId="pCpf"
             iType="text"
@@ -95,25 +149,13 @@ export const AtualizarPessoa = () => {
         </div>
         <div>
           <label htmlFor="pDataNasc">Data Nasc.:</label>
-          <label htmlFor="pCpf">pCpf:</label>
           <InputFormPessoa
             iValue={data.pDataNasc}
             setValue={alteraCampo}
+            validacao={() => validaDataNasc(data)}
             iName="pDataNasc"
             iId="pDataNasc"
             iType="date"
-            iPlaceholder="000.000.000-00"
-          />
-        </div>
-        <div>
-          <label htmlFor="pTelefone">Telefone:</label>
-          <InputFormPessoa
-            iValue={data.pTelefone}
-            setValue={alteraCampo}
-            iName="pTelefone"
-            iId="pTelefone"
-            iType="text"
-            iPlaceholder="(00) 0000-0000"
           />
         </div>
         <div>
@@ -122,30 +164,21 @@ export const AtualizarPessoa = () => {
             iValue={data.pCep}
             setValue={alteraCampo}
             setBlur={buscaEndereco}
+            validacao={() => validaCep(data)}
             iName="pCep"
             iId="pCep"
             iType="text"
             iPlaceholder="0000-000"
           />
-
-          {/* <input
-            className="text-bgDark"
-            name="pCidade"
-            id="pCidade"
-            type="text"
-            value={cep}
-            onChange={(e) => {
-              setCep(Number(e.currentTarget.value));
-            }}
-            onBlur={(e) => buscaEndereco(e.currentTarget.value)}
-            placeholder="Insira o nome..."/> */}
         </div>
         <div>
           {/* deixar nao editavel */}
           <label htmlFor="pCidade">Cidade:</label>
           <InputFormPessoa
+            disabled={true}
             iValue={data.pCidade}
             setValue={alteraCampo}
+            validacao={() => validaCidade(data)}
             iName="pCidade"
             iId="pCidade"
             iType="text"
@@ -156,8 +189,10 @@ export const AtualizarPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pEstado">Estado:</label>
           <InputFormPessoa
+            disabled={true}
             iValue={data.pEstado}
             setValue={alteraCampo}
+            validacao={() => validaEstado(data)}
             iName="pEstado"
             iId="pEstado"
             iType="text"
@@ -168,8 +203,10 @@ export const AtualizarPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pBairro">Bairro:</label>
           <InputFormPessoa
+            disabled={true}
             iValue={data.pBairro}
             setValue={alteraCampo}
+            validacao={() => validaBairro(data)}
             iName="pBairro"
             iId="pBairro"
             iType="text"
@@ -180,8 +217,10 @@ export const AtualizarPessoa = () => {
           {/* deixar nao editavel */}
           <label htmlFor="pRua">Rua:</label>
           <InputFormPessoa
+            disabled={true}
             iValue={data.pRua}
             setValue={alteraCampo}
+            validacao={() => validaRua(data)}
             iName="pRua"
             iId="pRua"
             iType="text"
@@ -193,6 +232,7 @@ export const AtualizarPessoa = () => {
           <InputFormPessoa
             iValue={data.pNumero}
             setValue={alteraCampo}
+            validacao={() => validaNumero(data)}
             iName="pNumero"
             iId="pNumero"
             iType="text"
@@ -203,6 +243,7 @@ export const AtualizarPessoa = () => {
           <label htmlFor="pComplemento">Complemento:</label>
           <InputFormPessoa
             iValue={data.pComplemento}
+            validacao={() => validaComplemento(data)}
             setValue={alteraCampo}
             iName="pComplemento"
             iId="pComplemento"
@@ -215,10 +256,23 @@ export const AtualizarPessoa = () => {
           <InputFormPessoa
             iValue={data.pEmail}
             setValue={alteraCampo}
+            validacao={() => validaEmail(data)}
             iName="pEmail"
             iId="pEmail"
-            iType="email"
+            iType="text"
             iPlaceholder="Informe o email"
+          />
+        </div>
+        <div>
+          <label htmlFor="pTelefone">Telefone:</label>
+          <InputFormPessoa
+            iValue={data.pTelefone}
+            setValue={alteraCampo}
+            validacao={() => validaTelefone(data)}
+            iName="pTelefone"
+            iId="pTelefone"
+            iType="text"
+            iPlaceholder="(00) 0000-0000"
           />
         </div>
         <div>
@@ -226,6 +280,7 @@ export const AtualizarPessoa = () => {
           <Select
             data={estadoCivilList}
             setValue={alteraCampo}
+            validacao={() => validaEstadoCivil(data)}
             value="pEstadoCivil"
             desc="pEstadoCivil"
             sName="pEstadoCivil"
@@ -237,6 +292,7 @@ export const AtualizarPessoa = () => {
           <InputFormPessoa
             iValue={data.pProfissao}
             setValue={alteraCampo}
+            validacao={() => validaProfissao(data)}
             iName="pProfissao"
             iId="pProfissao"
             iType="text"

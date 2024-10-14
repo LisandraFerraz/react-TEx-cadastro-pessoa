@@ -10,7 +10,7 @@ import { FiltrosListagem } from "../../utils/classes/filtros-listar";
 import { IPagination } from "../../utils/interfaces/pagination";
 import { Pagination } from "../../Components/pagination";
 import { Select } from "../../Components/select";
-import { Navigate, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export const ConsultarPessoasF = () => {
   const navigate = useNavigate();
@@ -79,6 +79,7 @@ export const ConsultarPessoasF = () => {
       <input
         name="pNome"
         type="text"
+        placeholder="Pesquisar nome..."
         onChange={(event) => setpNome(event?.target.value)}
       />
       <button onClick={pesquisarPessoa}>Pesquisar</button>

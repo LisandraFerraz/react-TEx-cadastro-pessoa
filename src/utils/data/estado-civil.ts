@@ -1,5 +1,9 @@
 export const estadoCivilList = [
   {
+    pEstadoCivil: "Selecione",
+    id: 0,
+  },
+  {
     pEstadoCivil: "Solteiro(a)",
     id: 1,
   },
